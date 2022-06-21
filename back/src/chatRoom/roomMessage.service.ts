@@ -15,15 +15,13 @@ export class roomMessageService
 		private readonly jwtService: JwtService
 	){}
 
-	async creatRoomMessage(token : string , body :any)
+	async creatRoomMessage(sender : string , body :any)
 	{
-		const tokenInfo : any = this.jwtService.decode(token);
-		let user_info = await this.usersRepository.query(`select "userName" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`);
-		var ow : User 
-		if(Object.keys(user_info).length != 0)
-		{
-			
-		}
+		let message : roomMessage
+		message.message  = body.message
+		message.roomId = body.roomId
+		message.senderId = sender
+		return await this.RoomRepository.save()
 	}
 
 	async getRoomMessages(roomId : number )

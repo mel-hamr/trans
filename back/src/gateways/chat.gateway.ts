@@ -364,11 +364,7 @@ export class chatGateway implements OnGatewayConnection , OnGatewayDisconnect {
 			let userInfo = await this.usersRepository.query(`select "userName" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`);
 			if(Object.keys(userInfo).length !== 0)
 			{
-				let room : chatRoom = await this.chatRoomServ.getRoomById(data.id)
-				data.message
-				data.sender 
-				data.roomId
-				
+				this.roomMessageServ.creatRoomMessage()
 			}
 		}
 	}
