@@ -29,4 +29,19 @@ export class notificationService
     {
         return this.notificationRep.findBy({reciverName : userName})
     }
+
+    async changeName(oldUserName : string, newUserName : string)
+    {
+        await this.notificationRep.query(`UPDATE public."notification" SET "senderName"='${newUserName}' WHERE "senderName"='${oldUserName}'`);
+        await this.notificationRep.query(`UPDATE public."notification" SET "reciverName"='${newUserName}' WHERE "reciverName"='${oldUserName}'`);
+    }
+
+    async deleteNotification(sender : string , reciver : string ,type : string)
+    {
+        return await this.notificationRep.delete({senderName : sender , reciverName : reciver , type : type})
+    }
+    async getNotificationBySR(sender : string , reciver : string ,type : string )
+    {
+        return  await this.notificationRep.findBy({senderName : sender , reciverName : reciver , type : type})
+    }
 }

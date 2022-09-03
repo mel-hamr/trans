@@ -1,17 +1,12 @@
-import { PassportStrategy } from '@nestjs/passport';
-import { Strategy, VerifyCallback } from 'passport-42';
 // import { UserDto } from "src/dto-classes/user.dto";
 import { sign, verify } from 'jsonwebtoken';
-
 import { config } from 'dotenv';
-
-import { HttpException, HttpStatus, Injectable, Res } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { UserDto } from 'src/dto-classes/user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
 import { RefreshToken } from '../entities/refresh-token.entity';
-import { response } from 'express';
 
 config();
 @Injectable()
@@ -28,7 +23,6 @@ export class AuthService {
   ): Promise<RefreshToken | undefined> {
     try {
       const decoded = verify(refreshStr, process.env.REFRESH_SECRET);
-      console.log(decoded);
       if (typeof decoded === 'string') {
         return undefined;
       }
@@ -38,7 +32,6 @@ export class AuthService {
         await this.tokenRepository.findOneBy({ email: decoded.email }),
       );
     } catch (e) {
-      console.log(e.message);
       return undefined;
     }
   }
@@ -78,7 +71,6 @@ export class AuthService {
     const user = await this.usersRepository.findOneBy({
       email: refreshToken.email,
     });
-    console.log('______)', user);
     if (!user) {
       return undefined;
     }
@@ -92,10 +84,7 @@ export class AuthService {
 
   async logout(refreshStr): Promise<void> {
     const refreshToken = await this.retrieveRefreshToken(refreshStr);
-    console.log('------------------');
-    console.log(refreshToken);
     if (!refreshToken) return;
-    console.log('------------------');
 
     await this.tokenRepository.query(
       `DELETE FROM public.refresh_token WHERE "email" = '${refreshToken.email}'`,
@@ -109,28 +98,22 @@ export class AuthService {
       },
     });
 
-    // console.log(exist.isTwoFactorAuthenticationEnabled);
     if (exist && exist.isTwoFactorAuthenticationEnabled === true) return 1;
-    else if (exist) return 2;
+    else if (exist)
+    {
+      if (!exist?.ifUserName)
+      {
+        // for picture
+        return 3;
+      }
+      return 2;
+    } 
     return 0;
   }
 
   async Login(req, res, values: { ipAddress: string }) {
     if (!req.user) return 'No user from intra';
 
-    // const userId = req.user.email;
-
-    // const payload = { userId: userId };
-    // const token = this.jwtService.sign(payload);;
-    // const token = this.jwtService.sign(payload);
-
-    // response.cookie('access_token', token, {
-    //   httpOnly: true,
-    //   domain: 'localhost', // your domain here!
-    //   expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
-    // })
-
-    // .send({ success: true });
     let userDto = new UserDto();
     userDto.email = req.user.email;
     userDto.firstName = req.user.firstName;
@@ -140,17 +123,10 @@ export class AuthService {
     let exist;
     if ((exist = await this.cheskUser(req)) == 0) {
       userDto.userName = req.user.email.split('@')[0];
-      // console.log(userDto);
-      // if (!userDto.userName)
-      // {
+
       await this.usersRepository.save(userDto);
-      // }
     }
-    console.log('id : ', req.user);
-    //  insert into "Users" (id,"firstName","lastName", "userName","email") values (9,'ftest', 'lname', 'username', 'etest');
-    // const iser = await this.usersRepository.query(`insert into Users 'winner_user,"loser_user","Score","played_at" from "Games" where winner_user='amouhtal' or loser_user='amouhtal'`);
-    // let info = this.newRefreshAndAccessToken(userDto, values)
-    // console.log(this.newRefreshAndAccessToken(userDto, values));
+
     return {
       refAcc: await this.newRefreshAndAccessToken(userDto.email, false, values),
       UserEmail: userDto.email,

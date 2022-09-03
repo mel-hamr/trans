@@ -1,0 +1,308 @@
+.Container{
+    width: calc(100% - 100px);
+    height: 100vh;
+    position: absolute;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    
+}
+
+.Content{
+    width: 90%;
+    height: 90vh;
+    display: flex;
+    flex-flow: column;
+    align-items: center;
+    padding: 25px;
+    gap: 40px;
+    overflow-y: scroll;
+}
+.Content::-webkit-scrollbar {
+    display: none;
+  }
+
+
+.containerDiv {
+    width: 80%;
+    /* position: absolute; */
+    /* background-color: red; */
+}
+/* ==========================CartNotification===================== */
+
+.CartContainer
+{
+    width: 98%;
+    height: 120px;
+    background-color: #646c79db;
+    box-shadow: black 0px 0px 15px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    border-radius: 15px;
+    position: relative;
+    border: 2px solid rgba(255, 255, 255, 0.538);
+}
+.userInfo{
+    height: 100px;
+    width: 450px;
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    cursor: pointer;
+}
+
+.userName{
+    font-family: monospace;
+    font-size: 20px;
+    font-weight: bolder;
+    color: rgba(255, 255, 255, 0.714);
+    overflow-wrap:break-word;
+    width: 290px;
+
+}
+
+.textContent{
+    color: rgba(255, 255, 255, 0.714);
+    font-size: 17px;
+    text-align: center;
+    font-family: monospace;
+    font-weight: bold;
+}
+
+.sparet{
+    height: 80px;
+    width: 3px;
+    background-color: #fb9039de;
+}
+.userimageOff{
+    margin-left: 35px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 5px solid rgba(255, 255, 255, 0.714);
+}
+
+.userimageON{
+    margin-left: 35px;
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 5px solid rgb(10, 145, 1);
+}
+
+.allButton{
+    width: 27%;
+    height: 50%;
+    display: flex;
+    align-items: center;
+    gap: 70px;
+    /* background-color: red; */
+    justify-content: center;
+    position: absolute;
+    right: 2%;
+}
+
+.btn{
+    width: 130px;
+    height: 50px;
+    color: #fb9039de;
+    border-radius: 10px;
+    border: none;
+    box-shadow: #fb9039af 0px 0px 10px;
+    font-family: monospace;
+    font-size: 18px;
+    font-weight: bolder;
+    letter-spacing: 1px;
+    border: 1px solid #fb9039c6;
+    cursor: pointer;
+    background-color: #1F3044;
+}
+.btn:hover{
+    color: rgba(255, 255, 255, 0.714);
+    background-color: black;
+    box-shadow: rgba(255, 255, 255, 0.714) 0px 0px 10px;
+    border: 1px solid rgba(255, 255, 255, 0.714);
+}
+
+/*------------------AlertNotification--------------------*/
+
+.AlertNotifcation{
+    width: 20%;
+    height: 130px;
+    background-color: rgba(237, 237, 237, 0.694);
+    position: absolute;
+    z-index: 1000000;
+    right: 4%;
+    animation-name: spain;
+    animation-duration: 3s;
+    display: flex;
+    align-items: center;
+    /* border: 1px solid gray; */
+    box-shadow: 0px 0px 15px rgba(0, 0, 0, 0.39);
+    border-bottom-left-radius: 20px;
+    border-bottom-right-radius: 20px;
+}
+.AlertN{
+    width: 100%;
+    display: flex;
+    gap: 10px;
+    margin-left: 10px;
+    align-items: center;
+}
+  
+@keyframes spain{
+    from{transform: translateY(-130px)}
+    to{transform: translateY(-1px);}
+}
+
+.imgAlert{
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+}
+.textAlert{
+    font-size: 15px;
+    font-family: monospace;
+    color: gray;
+}
+.UserNameAlert{
+    font-size: 15px;
+    font-family: monospace;
+    width: 100px;
+    color: rgb(1, 92, 108);
+    font-weight: bolder;
+}
+/*---------------end Alert-------------------------------*/
+
+@media screen and (max-width: 1836px)
+{
+    .CartContainer{
+        gap: 50px;
+    }
+    .textContent{
+        width: 350px;
+    }
+    .allButton{
+        right: 3%;
+        width: 40%;
+    }
+    .btn{
+        width: 100px;
+    }
+    .userimageOff{
+        margin-left: 10px;
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgb(205, 0, 0);
+    }
+    .userimageON{
+        margin-left: 10px;
+        width: 60px;
+        height: 60px;
+        border: 3px solid rgb(10, 145, 1);
+    }
+    .userInfo{
+        width: 300px;
+    }
+}
+@media screen and (max-width: 1544px){
+    .CartContainer{
+        gap: 20px;
+    }
+    .allButton{
+        right: 3%;
+        width: 30%;
+    }
+}
+
+@media screen and (max-width: 1440px)
+{
+    .Container{
+        width: 100%;
+    }
+    .CartContainer{
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 1202px)
+{
+    .userInfo{
+        gap: 5px;
+        width: 250px;
+    }
+    .userName{
+        font-size: 15px;
+        width: 150px;
+    }
+    .textContent{
+        font-size: 13px;
+    }
+    .allButton{
+        gap: 10px;
+        right: -8%;
+        flex-direction: column;
+        height: 100%;
+    }
+    .btn{
+        width: 90px;
+        height: 30px;
+        font-family: monospace;
+        font-size: 15px;
+        font-weight: bolder;
+        letter-spacing: 0px;
+    }
+}
+
+@media screen and (max-width: 790px){
+    .CartContainer{
+        width: 98%;
+        height: 200px;
+        flex-direction: column;
+        gap: 5px;
+    }
+    .allButton{
+        flex-direction: row;
+        right: 37%;
+        bottom: 3%;
+        height: 60px;
+    }
+    .btn{
+        width: 200px;
+        height: 40px;
+    }
+    .sparet{
+        height: 2px;
+        width: 90%;
+    }
+    .userInfo{
+        gap: 20px;
+        height: 70px;
+        width: 80%;
+        justify-content: center;
+    }
+    .userimageOff{
+        margin-left: 0px;
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgb(205, 0, 0);
+    }
+    .userimageON{
+        margin-left: 10px;
+        width: 50px;
+        height: 50px;
+        border: 3px solid rgb(10, 145, 1);
+    }
+    .textContent{
+        font-size: 13px;
+        width: 80%;
+    }
+}
+@media screen  and (max-width: 306px){
+    .textContent{
+        font-size: 12px;
+        width: 224px;
+    }
+}

@@ -1,4 +1,4 @@
-import { Body, Controller, Post,Req, UseGuards } from "@nestjs/common";
+import { Body, Controller, Get, Post,Req, UseGuards, UsePipes, ValidationPipe } from "@nestjs/common";
 import { AuthGuard } from "@nestjs/passport";
 import { InjectRepository } from "@nestjs/typeorm";
 import { JwtAuthGuard } from "src/guards/jwt-auth.gguard";
@@ -12,6 +12,7 @@ import { chatRoom } from "src/entities/chatRoom.entity";
 import { connect } from "http2";
 import { roomMessage } from "src/entities/roomMessage.entity";
 import { roomMessageService } from "./roomMessage.service";
+import { uDto } from "src/messages/message.controller";
 
 
 @Controller('roomMessage')
@@ -29,15 +30,23 @@ export class roomMessageController {
 		return  rMessage
 	}
 
-	async getRoomMessages(data : any)
+
+	@Post('getConnversation')
+	@UseGuards(JwtAuthGuard)
+	async getConv (@Body() roomId : any, @Req() request: Request ) 
 	{
-		let rMessages = await this.roomMessageRep.findBy({roomId : data})
-		return (rMessages)
+		const jwt = request.headers.authorization.replace('Bearer ', '');
+		const tokenInfo : any = this.jwtService.decode(jwt);
+
+		let conv : any = await  this.RoomService.getRoomMessages(roomId.roomId);
+		return conv
+	}
+	@Post('getLastMessage')
+	@UseGuards(JwtAuthGuard)
+	async getLastMessage (@Body() roomId : any, @Req() request: Request ) 
+	{
+
+		let conv : any = await  this.RoomService.getRoomMessages(roomId.roomId);
+		return conv[conv.length - 1]
 	}
 }
-/* 
-SELECT *
-FROM subject
-JOIN subject_note AS jt on jt.subject_id = subject.id
-WHERE jt.note_id = :id 
-*/

@@ -25,6 +25,8 @@ export class FriendsController {
   constructor(
     private readonly friendService: friendsService,
     @InjectRepository(User) private userRepo: Repository<User>,
+    @InjectRepository(FriendLsit) private friendList: Repository<FriendLsit>,
+
     private readonly userService: UserService,
     private readonly jwtService: JwtService,
   ) {}
@@ -39,13 +41,11 @@ export class FriendsController {
     const userName = await this.userRepo.query(
       `select public."Users"."userName" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
-    const userId = await this.userRepo.query(
+    let userId = await this.userRepo.query(
       `select "id" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
 
-    //  const userName = await this.userRepo.query(`SELECT "userName", "picture" FROM public."Users";`);
     return await this.friendService.users(userName[0].userName, userId[0].id);
-    //     return this.friendService.findAll(userName);
   }
 
   @Post('one')
@@ -127,7 +127,6 @@ export class FriendsController {
     const id = await this.userRepo.query(
       `select "id" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
-    // console.log(userName[0].userName, data.sender_id);
     return this.friendService.acceptFriend(
       userName[0].userName,
       data.sender_id,
@@ -142,8 +141,6 @@ export class FriendsController {
     const user = await this.userRepo.query(
       `select "userName" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
-    // console.log('tokenInfo.userId : ', request);
-
     return this.friendService.sendInv(user[0].userName, data.recipent_id);
   }
 
@@ -160,23 +157,20 @@ export class FriendsController {
 
   @Post('reject')
   async rejectInv(@Body() data: FriendsInviteDto, @Req() request: Request) {
-    // console.log('here');
     const jwt = request.headers.authorization.replace('Bearer ', '');
     const tokenInfo: any = this.jwtService.decode(jwt);
     const userName = await this.userRepo.query(
       `select public."Users"."userName" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
-    const userId = await this.userRepo.query(
+    let userId = await this.userRepo.query(
       `select "id" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
 
-    //  const userName = await this.userRepo.query(`SELECT "userName", "picture" FROM public."Users";`);
     return this.friendService.rejectFriend(
       userName[0].userName,
       data.recipent_id,
       userId[0].id,
     );
-    // return this.friendService.findAll(userName);
   }
 
   @Get('block')
@@ -184,16 +178,26 @@ export class FriendsController {
     const jwt = request.headers.authorization.replace('Bearer ', '');
     const tokenInfo: any = this.jwtService.decode(jwt);
     const userId = await this.userRepo.query(
-      `select "id" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
+      `select "userName" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
-    let user_blocked = await this.userRepo
-      .query(`select public."Users"."userName", public."Users"."picture"  FROM public."Users"
-		WHERE  public."Users"."userName" IN 
-		(select "Blocked" FROM public."FriendBlocked" WHERE public."FriendBlocked"."userId" = '${userId[0].id}')
-		`);
-    // console.log(user_blocked);
+    let users_I_blocked = 
+    await this.userRepo
+    .query(`select public."Users"."userName", public."Users"."picture"  FROM public."Users" 
+    WHERE  public."Users"."userName" IN 
+    (select "FriendBlocked"."Blocker"  FROM public."FriendBlocked" WHERE public."FriendBlocked"."Blocked" = '${userId[0].userName}' )
+    `);
+    
+    let users_T_blocked = 
+    await this.userRepo
+    .query(`select public."Users"."userName", public."Users"."picture"  FROM public."Users" 
+    WHERE  public."Users"."userName" IN 
+    (
+    select "FriendBlocked"."Blocked"  FROM public."FriendBlocked" WHERE public."FriendBlocked"."Blocker" = '${userId[0].userName}')
 
-    return user_blocked;
+    `);
+    
+
+    return {users_I_blocked,users_T_blocked };
   }
 
   @Post('block')
@@ -206,7 +210,7 @@ export class FriendsController {
     let FriendUserName: string;
     let FriendUserID: number;
 
-    const userId = await this.userRepo.query(
+    let userId = await this.userRepo.query(
       `select "id" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
 
@@ -228,7 +232,6 @@ export class FriendsController {
     if (ifUserBlocked.length == 0 && CurrentUserName != FriendUserName) {
       //Delete from friends
 
-      // console.log(CurrentUserName, FriendUserID);
       await this.userRepo.query(
         `DELETE FROM public."FriendLsit"
         WHERE public."FriendLsit"."userName" = '${CurrentUserName}' AND  public."FriendLsit"."userId" = '${FriendUserID}'`,
@@ -253,14 +256,25 @@ export class FriendsController {
     const userId = await this.userRepo.query(
       `select "id" from public."Users" WHERE public."Users".email = '${tokenInfo.userId}'`,
     );
-
+      
     await this.userRepo.query(
       `DELETE FROM public."FriendBlocked" WHERE  "Blocked" = '${data.userName}' AND "userId" = '${userId[0].id}'`,
     );
   }
 
-  @Post()
-  removeFriend() {
-    // return this.friendService.findAll();
+  @Post('removeFriend')
+  async removeFriend(@Body() data: frienduser, @Req() request: Request) {
+
+    let jwt = request.headers.authorization.replace('Bearer ', '');
+
+    let CurrentUser = await this.userService.getUserJwt(jwt);
+    let FriendUser = await this.userRepo.findOneBy({userName : data.userName});
+
+   await this.friendList
+   .delete({ userName: CurrentUser.userName, user : FriendUser.id})
+
+   await this.friendList
+   .delete({ userName: FriendUser.userName, user : CurrentUser.id})
+ 
   }
 }

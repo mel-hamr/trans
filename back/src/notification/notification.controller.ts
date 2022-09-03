@@ -6,7 +6,7 @@ import { JwtAuthGuard } from "src/guards/jwt-auth.gguard";
 import { Repository } from "typeorm/repository/Repository";
 import { notificationService } from "./notification.service";
 
-@Controller('auth/42')
+@Controller('notifications')
 export class notificationController {
   constructor(
     private  notificationServ : notificationService,
@@ -22,5 +22,11 @@ export class notificationController {
   {
     return this.notificationServ.getNotifications(token)
 
+  }
+  @Post('getUserNotifications')
+  @UseGuards(JwtAuthGuard)
+  async getUserNotifications (@Body() body :any) 
+  {
+    return this.notificationServ.getNotifications(body.userName)
   }
 }

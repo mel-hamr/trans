@@ -16,7 +16,7 @@ export class GamesService {
   }
 
   public async InsertGame(gamesDto: GamesDto) {
-    const gamesData = await this.gamesRepository.create(gamesDto);
-    await this.gamesRepository.save(gamesData);
+    
+    const gamesData = await this.gamesRepository.save(gamesDto);
   }
 }

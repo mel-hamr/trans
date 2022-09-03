@@ -9,17 +9,17 @@ import { messages } from './entities/message.entity';
 import { chatRoom } from './entities/chatRoom.entity';
 import { roomMessage } from './entities/roomMessage.entity';
 import { Notification } from './entities/notification.entity';
-
-// ['**/*.entity{.ts,.js}']
+import { roomBannedUser } from './entities/roomsBannedUser.entity';
 
 export const typeOrmConfig: TypeOrmModuleOptions = {
   type: 'postgres',
-  host: 'localhost',
+  host: 'db',
   port: 5432,
   username: 'postgres',
   password: 'postgres',
   database: 'trans',
   entities: [
+    roomBannedUser,
     Notification,
     liveGame,
     User,
